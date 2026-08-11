@@ -1,0 +1,26 @@
+# Node / Next.js
+node_modules/
+.next/
+out/
+build/
+dist/
+
+# Hardhat
+artifacts/
+cache/
+typechain/
+typechain-types/
+
+# Environment & Secrets
+.env
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# OS / IDE
+.DS_Store
+*.pem
+.vscode/
+.idea/
+*.log
