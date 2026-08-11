@@ -25,26 +25,25 @@ export const FTSOTicker: React.FC<FTSOTickerProps> = ({ feeds }) => {
         return (
           <div
             key={feed.symbol}
-            className="glass-card p-5 flex flex-col justify-between relative overflow-hidden group hover:border-[#ea2a66]/40"
-            style={{ borderRadius: '16px', background: 'rgba(10, 15, 26, 0.8)', border: '1px solid rgba(255,255,255,0.1)' }}
+            className="glass-card p-5 flex flex-col justify-between relative overflow-hidden group hover:border-blue-400"
           >
             {/* Top Row: Symbol, Name & Sub-Second Latency */}
             <div className="flex items-center justify-between z-10">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-gray-900 border border-white/10 flex items-center justify-center font-black text-sm text-white font-mono">
+                <div className="w-10 h-10 rounded-xl bg-blue-50 border border-blue-200 flex items-center justify-center font-black text-sm text-[#1e3a8a] font-mono shadow-inner">
                   {feed.symbol}
                 </div>
                 <div>
-                  <h3 className="font-bold text-sm text-white">{feed.name}</h3>
-                  <span className="text-[10px] text-gray-400 font-mono flex items-center gap-1">
-                    <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-live-dot" />
+                  <h3 className="font-bold text-sm text-[#0f172a]">{feed.name}</h3>
+                  <span className="text-[10px] text-blue-900/60 font-mono flex items-center gap-1">
+                    <span className="w-1.5 h-1.5 rounded-full bg-blue-600 animate-live-dot" />
                     FTSOv2 Oracle Feed
                   </span>
                 </div>
               </div>
 
-              <div className="flex items-center gap-1 text-[11px] font-mono text-cyan-400 bg-cyan-950/50 px-2.5 py-1 rounded-lg border border-cyan-800/40">
-                <Cpu className="w-3 h-3 text-cyan-300" />
+              <div className="flex items-center gap-1 text-[11px] font-mono text-blue-700 bg-blue-50 px-2.5 py-1 rounded-lg border border-blue-200">
+                <Cpu className="w-3 h-3 text-blue-600" />
                 <span>{feed.blockLatencyMs}ms</span>
               </div>
             </div>
@@ -52,19 +51,19 @@ export const FTSOTicker: React.FC<FTSOTickerProps> = ({ feeds }) => {
             {/* Price & Sparkline Area */}
             <div className="my-4 flex items-baseline justify-between z-10">
               <div>
-                <span className="text-[10px] text-gray-500 font-mono uppercase tracking-wider block">Live Price (USD)</span>
-                <div className="text-2xl font-black font-mono text-white tracking-tight">
+                <span className="text-[10px] text-slate-400 font-mono uppercase tracking-wider block">Live Price (USD)</span>
+                <div className="text-2xl font-black font-mono text-[#1e3a8a] tracking-tight">
                   ${feed.price >= 1000 ? feed.price.toLocaleString() : feed.price.toFixed(feed.decimals)}
                 </div>
               </div>
 
-              {/* Mini Sparkline Graph with Strict Width Constraints */}
+              {/* Mini Sparkline Graph */}
               <div className="w-24 h-8 relative" style={{ width: '96px', height: '32px', maxWidth: '96px' }}>
                 <svg viewBox="0 0 200 30" style={{ width: '100%', height: '100%' }}>
                   <path
                     d={sparkPath}
                     fill="none"
-                    stroke={isPositive ? '#10b981' : '#f43f5e'}
+                    stroke={isPositive ? '#2563eb' : '#dc2626'}
                     strokeWidth="3"
                     strokeLinecap="round"
                   />
@@ -73,19 +72,19 @@ export const FTSOTicker: React.FC<FTSOTickerProps> = ({ feeds }) => {
             </div>
 
             {/* Bottom Row: 24h Change & FTSO Feed ID */}
-            <div className="flex items-center justify-between text-xs pt-3 border-t border-white/10 z-10 font-mono">
+            <div className="flex items-center justify-between text-xs pt-3 border-t border-slate-100 z-10 font-mono">
               <div
                 className={`flex items-center gap-1 font-bold px-2 py-0.5 rounded-md ${
                   isPositive
-                    ? 'text-emerald-300 bg-emerald-950/60 border border-emerald-800/40'
-                    : 'text-rose-300 bg-rose-950/60 border border-rose-800/40'
+                    ? 'text-blue-700 bg-blue-50 border border-blue-200'
+                    : 'text-red-700 bg-red-50 border border-red-200'
                 }`}
               >
                 {isPositive ? <TrendingUp className="w-3.5 h-3.5" /> : <TrendingDown className="w-3.5 h-3.5" />}
                 <span>{isPositive ? `+${feed.change24h}%` : `${feed.change24h}%`}</span>
               </div>
 
-              <div className="text-[10px] text-gray-400 font-mono tracking-wider">
+              <div className="text-[10px] text-slate-400 font-mono tracking-wider">
                 ID: {feed.feedId.substring(0, 8)}...
               </div>
             </div>

@@ -33,7 +33,6 @@ export const Header: React.FC<HeaderProps> = ({ account, onConnect, onDisconnect
     onConnect(userAddress);
   };
 
-  // Listen for real-time account and chain changes
   useEffect(() => {
     if (typeof window !== 'undefined' && (window as any).ethereum) {
       const ethereum = (window as any).ethereum;
@@ -65,27 +64,26 @@ export const Header: React.FC<HeaderProps> = ({ account, onConnect, onDisconnect
 
   return (
     <>
-      <header className="w-full border-b border-white/10 bg-[#04060c]/80 backdrop-blur-xl sticky top-0 z-40 px-4 sm:px-8 py-3.5 flex items-center justify-between">
+      <header className="w-full border-b border-slate-200 bg-white/90 backdrop-blur-xl sticky top-0 z-40 px-4 sm:px-8 py-3.5 flex items-center justify-between shadow-sm">
         {/* Brand & Identity */}
         <div className="flex items-center gap-4">
           <div className="relative group cursor-pointer">
-            <div className="absolute -inset-1 bg-gradient-to-r from-[#ea2a66] to-[#00f2fe] rounded-2xl blur opacity-75 group-hover:opacity-100 transition duration-300"></div>
-            <div className="relative w-11 h-11 rounded-xl bg-[#080d1a] border border-white/20 flex items-center justify-center text-white shadow-xl">
-              <Zap className="w-6 h-6 text-[#ea2a66] fill-[#ea2a66]/20 animate-pulse" />
+            <div className="w-11 h-11 rounded-xl bg-gradient-to-tr from-[#dc2626] to-[#2563eb] flex items-center justify-center text-white shadow-md">
+              <Zap className="w-6 h-6 fill-white/20 animate-pulse" />
             </div>
           </div>
 
           <div>
             <div className="flex items-center gap-2.5">
-              <h1 className="text-xl sm:text-2xl font-black text-white tracking-tight">
-                Flare<span className="gradient-text-flare">Pulse AI</span>
+              <h1 className="text-xl sm:text-2xl font-black tracking-tight text-[#1e3a8a]">
+                Flare<span className="text-[#dc2626]">Pulse AI</span>
               </h1>
-              <span className="inline-flex items-center gap-1.5 text-[10px] font-bold px-2.5 py-0.5 rounded-full bg-[#ea2a66]/15 text-[#ea2a66] border border-[#ea2a66]/30 uppercase tracking-wider font-mono">
-                <span className="w-1.5 h-1.5 rounded-full bg-[#ea2a66] animate-live-dot" />
+              <span className="inline-flex items-center gap-1.5 text-[10px] font-extrabold px-2.5 py-0.5 rounded-full bg-red-50 text-[#dc2626] border border-red-200 uppercase tracking-wider font-mono">
+                <span className="w-1.5 h-1.5 rounded-full bg-[#dc2626] animate-live-dot" />
                 Coston2 Testnet
               </span>
             </div>
-            <p className="text-xs text-gray-400 font-medium hidden sm:block">
+            <p className="text-xs text-blue-900/70 font-medium hidden sm:block">
               FTSOv2 Autonomous Yield & Risk Sentinel
             </p>
           </div>
@@ -93,22 +91,22 @@ export const Header: React.FC<HeaderProps> = ({ account, onConnect, onDisconnect
 
         {/* Network Health Metrics */}
         <div className="hidden lg:flex items-center gap-4 text-xs font-mono">
-          <div className="flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-gray-900/80 border border-white/10 shadow-inner">
-            <Radio className="w-4 h-4 text-emerald-400 animate-pulse" />
-            <span className="text-gray-400">Oracle:</span>
-            <strong className="text-emerald-400 font-bold">FTSOv2 Sub-Second</strong>
+          <div className="flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-blue-50/80 border border-blue-100 shadow-inner">
+            <Radio className="w-4 h-4 text-blue-600 animate-pulse" />
+            <span className="text-blue-900/60">Oracle:</span>
+            <strong className="text-blue-700 font-bold">FTSOv2 Sub-Second</strong>
           </div>
 
-          <div className="flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-gray-900/80 border border-white/10 shadow-inner">
-            <Globe className="w-4 h-4 text-cyan-400" />
-            <span className="text-gray-400">Chain:</span>
-            <strong className="text-cyan-400 font-bold">Flare (114)</strong>
+          <div className="flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-red-50/80 border border-red-100 shadow-inner">
+            <Globe className="w-4 h-4 text-red-600" />
+            <span className="text-red-900/60">Chain:</span>
+            <strong className="text-red-600 font-bold">Flare (114)</strong>
           </div>
 
-          <div className="flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-gray-900/80 border border-white/10 shadow-inner">
-            <ShieldCheck className="w-4 h-4 text-purple-400" />
-            <span className="text-gray-400">Enclave:</span>
-            <strong className="text-purple-400 font-bold">TEE Verified</strong>
+          <div className="flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-slate-100 border border-slate-200 shadow-inner">
+            <ShieldCheck className="w-4 h-4 text-blue-800" />
+            <span className="text-slate-500">Enclave:</span>
+            <strong className="text-blue-900 font-bold">TEE Verified</strong>
           </div>
         </div>
 
@@ -117,15 +115,15 @@ export const Header: React.FC<HeaderProps> = ({ account, onConnect, onDisconnect
           {account ? (
             <button
               onClick={onDisconnect}
-              className="flex items-center gap-2.5 px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold font-mono bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 hover:bg-emerald-500/30 transition-all shadow-lg"
+              className="flex items-center gap-2.5 px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold font-mono bg-blue-50 text-blue-700 border border-blue-200 hover:bg-blue-100 transition-all shadow-sm"
             >
-              <Wallet className="w-4 h-4 text-emerald-400" />
+              <Wallet className="w-4 h-4 text-blue-600" />
               <span>{account.substring(0, 6)}...{account.substring(account.length - 4)}</span>
             </button>
           ) : (
             <button
               onClick={() => setIsModalOpen(true)}
-              className="flex items-center gap-2.5 px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold font-mono btn-neon text-white hover:opacity-95 transition-all shadow-lg"
+              className="flex items-center gap-2.5 px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold font-mono bg-gradient-to-r from-[#dc2626] to-[#2563eb] text-white hover:opacity-95 transition-all shadow-md"
             >
               <Wallet className="w-4 h-4" />
               <span>Connect Web3 Wallet</span>

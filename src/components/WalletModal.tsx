@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { X, ArrowRight, ShieldCheck, CheckCircle2, Wallet, ExternalLink } from 'lucide-react';
+import { X, ArrowRight, ShieldCheck, Wallet } from 'lucide-react';
 import { COSTON2_CHAIN_ID, COSTON2_NETWORK_PARAMS } from './Header';
 
 interface WalletModalProps {
@@ -35,7 +35,7 @@ export const WalletModal: React.FC<WalletModalProps> = ({
       id: 'metamask',
       name: 'MetaMask / Browser EVM',
       subtext: 'Ethereum, Flare Coston2, Base, Arbitrum',
-      iconBg: 'bg-orange-500/20 text-orange-400 border-orange-500/40',
+      iconBg: 'bg-orange-50 text-orange-600 border-orange-200',
       iconText: '🦊',
       badge: 'Popular',
       checkProvider: () => (typeof window !== 'undefined' ? (window as any).ethereum : null),
@@ -44,7 +44,7 @@ export const WalletModal: React.FC<WalletModalProps> = ({
       id: 'phantom',
       name: 'Phantom Wallet',
       subtext: 'Multi-Chain EVM & Solana',
-      iconBg: 'bg-purple-500/20 text-purple-400 border-purple-500/40',
+      iconBg: 'bg-purple-50 text-purple-600 border-purple-200',
       iconText: '👻',
       checkProvider: () => (typeof window !== 'undefined' ? ((window as any).phantom?.ethereum || (window as any).ethereum) : null),
     },
@@ -52,7 +52,7 @@ export const WalletModal: React.FC<WalletModalProps> = ({
       id: 'coinbase',
       name: 'Coinbase Wallet',
       subtext: 'Coinbase Smart Wallet & Extension',
-      iconBg: 'bg-blue-500/20 text-blue-400 border-blue-500/40',
+      iconBg: 'bg-blue-50 text-blue-600 border-blue-200',
       iconText: '🔵',
       checkProvider: () => (typeof window !== 'undefined' ? ((window as any).coinbaseWalletExtension || (window as any).ethereum) : null),
     },
@@ -60,7 +60,7 @@ export const WalletModal: React.FC<WalletModalProps> = ({
       id: 'walletconnect',
       name: 'WalletConnect v2',
       subtext: 'Mobile Apps, Rainbow, Trust Wallet, QR Code',
-      iconBg: 'bg-cyan-500/20 text-cyan-400 border-cyan-500/40',
+      iconBg: 'bg-[#00f2fe]/10 text-cyan-700 border-cyan-200',
       iconText: '🌐',
       checkProvider: () => (typeof window !== 'undefined' ? (window as any).ethereum : null),
     },
@@ -76,7 +76,6 @@ export const WalletModal: React.FC<WalletModalProps> = ({
         throw new Error(`${option.name} extension not detected. Please install the extension.`);
       }
 
-      // 1. Request real accounts
       const accounts = await provider.request({ method: 'eth_requestAccounts' });
       if (!accounts || accounts.length === 0) {
         throw new Error('No accounts authorized');
@@ -84,7 +83,6 @@ export const WalletModal: React.FC<WalletModalProps> = ({
 
       const userAddress = accounts[0];
 
-      // 2. Switch or add Coston2 Testnet
       try {
         await provider.request({
           method: 'wallet_switchEthereumChain',
@@ -110,39 +108,39 @@ export const WalletModal: React.FC<WalletModalProps> = ({
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md">
+    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-900/50 backdrop-blur-md">
       <div
-        className="w-full max-w-md bg-[#0a0f1d] border border-white/15 rounded-3xl p-6 shadow-2xl relative overflow-hidden text-gray-100"
+        className="w-full max-w-md bg-white border border-slate-200 rounded-3xl p-6 shadow-2xl relative overflow-hidden text-slate-800"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Top Header */}
-        <div className="flex items-center justify-between border-b border-white/10 pb-4 mb-4">
+        <div className="flex items-center justify-between border-b border-slate-100 pb-4 mb-4">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-2xl bg-[#ea2a66]/20 border border-[#ea2a66]/40 flex items-center justify-center text-[#ea2a66]">
+            <div className="w-10 h-10 rounded-2xl bg-blue-50 border border-blue-200 flex items-center justify-center text-blue-600">
               <Wallet className="w-5 h-5" />
             </div>
             <div>
-              <h3 className="font-extrabold text-lg text-white tracking-tight">Connect Web3 Wallet</h3>
-              <p className="text-xs text-gray-400">Select your preferred EVM provider</p>
+              <h3 className="font-extrabold text-lg text-[#1e3a8a] tracking-tight">Connect Web3 Wallet</h3>
+              <p className="text-xs text-slate-500">Select your preferred EVM provider</p>
             </div>
           </div>
 
           <button
             onClick={onClose}
-            className="w-8 h-8 rounded-full bg-gray-900 border border-white/10 flex items-center justify-center text-gray-400 hover:text-white hover:bg-gray-800 transition-all"
+            className="w-8 h-8 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center text-slate-500 hover:text-slate-900 hover:bg-slate-200 transition-all"
           >
             <X className="w-4 h-4" />
           </button>
         </div>
 
         {/* Subtitle description */}
-        <p className="text-xs text-gray-300 mb-4 leading-relaxed font-mono">
+        <p className="text-xs text-slate-600 mb-4 leading-relaxed font-mono">
           Connect your Web3 browser wallet to configure yield mandates, verify FTSOv2 ratings, and sign Flare Coston2 transactions.
         </p>
 
         {/* Error notification if any */}
         {errorMsg && (
-          <div className="mb-4 p-3 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-300 text-xs font-mono">
+          <div className="mb-4 p-3 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs font-mono">
             {errorMsg}
           </div>
         )}
@@ -156,7 +154,7 @@ export const WalletModal: React.FC<WalletModalProps> = ({
                 key={opt.id}
                 onClick={() => handleSelectWallet(opt)}
                 disabled={connectingId !== null}
-                className="w-full p-4 rounded-2xl bg-[#0e1424] border border-white/10 hover:border-[#ea2a66]/50 hover:bg-[#121a30] transition-all flex items-center justify-between group text-left disabled:opacity-60"
+                className="w-full p-4 rounded-2xl bg-slate-50 border border-slate-200 hover:border-blue-500 hover:bg-blue-50/50 transition-all flex items-center justify-between group text-left disabled:opacity-60"
               >
                 <div className="flex items-center gap-3.5">
                   <div className={`w-11 h-11 rounded-2xl border flex items-center justify-center text-xl font-bold ${opt.iconBg}`}>
@@ -164,22 +162,22 @@ export const WalletModal: React.FC<WalletModalProps> = ({
                   </div>
                   <div>
                     <div className="flex items-center gap-2">
-                      <h4 className="font-extrabold text-sm text-white group-hover:text-[#ea2a66] transition-all">
+                      <h4 className="font-extrabold text-sm text-[#0f172a] group-hover:text-blue-700 transition-all">
                         {opt.name}
                       </h4>
                       {opt.badge && (
-                        <span className="text-[9px] font-mono font-bold px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                        <span className="text-[9px] font-mono font-bold px-2 py-0.5 rounded-full bg-blue-100 text-blue-700 border border-blue-200">
                           {opt.badge}
                         </span>
                       )}
                     </div>
-                    <p className="text-xs text-gray-400 font-mono mt-0.5">{opt.subtext}</p>
+                    <p className="text-xs text-slate-500 font-mono mt-0.5">{opt.subtext}</p>
                   </div>
                 </div>
 
-                <div className="text-gray-400 group-hover:text-[#ea2a66] group-hover:translate-x-1 transition-all">
+                <div className="text-slate-400 group-hover:text-blue-700 group-hover:translate-x-1 transition-all">
                   {isSelected ? (
-                    <span className="w-4 h-4 rounded-full border-2 border-[#ea2a66] border-t-transparent animate-spin inline-block" />
+                    <span className="w-4 h-4 rounded-full border-2 border-blue-600 border-t-transparent animate-spin inline-block" />
                   ) : (
                     <ArrowRight className="w-5 h-5" />
                   )}
@@ -190,11 +188,11 @@ export const WalletModal: React.FC<WalletModalProps> = ({
         </div>
 
         {/* Modal Footer Note */}
-        <div className="mt-6 pt-4 border-t border-white/10 flex items-center justify-between text-[11px] text-gray-400 font-mono">
+        <div className="mt-6 pt-4 border-t border-slate-100 flex items-center justify-between text-[11px] text-slate-500 font-mono">
           <span className="flex items-center gap-1.5">
-            <ShieldCheck className="w-4 h-4 text-emerald-400" /> End-to-End Encrypted Session
+            <ShieldCheck className="w-4 h-4 text-blue-600" /> End-to-End Encrypted Session
           </span>
-          <span className="text-cyan-400">Flare Coston2 (114)</span>
+          <span className="text-blue-700 font-bold">Flare Coston2 (114)</span>
         </div>
       </div>
     </div>

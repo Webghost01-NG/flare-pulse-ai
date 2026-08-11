@@ -32,12 +32,10 @@ export default function Home() {
     activeStrategy: 'FTSOv2 Dynamic Delta Rebalance',
   });
 
-  // Client mount check to eliminate React hydration mismatch
   useEffect(() => {
     setIsMounted(true);
   }, []);
 
-  // Fetch real C2FLR native token balance from Coston2 RPC
   const updateRealBalance = useCallback(async (userAddress: string) => {
     try {
       const provider = new ethers.JsonRpcProvider(COSTON2_RPC);
@@ -53,13 +51,11 @@ export default function Home() {
     }
   }, []);
 
-  // Connect Real Wallet
   const handleConnectWallet = useCallback((userAddress: string) => {
     setAccount(userAddress);
     updateRealBalance(userAddress);
   }, [updateRealBalance]);
 
-  // Disconnect Wallet
   const handleDisconnectWallet = useCallback(() => {
     setAccount(null);
     setRealBalance('0.00');
@@ -69,7 +65,6 @@ export default function Home() {
     }));
   }, []);
 
-  // Check if wallet is already connected on mount
   useEffect(() => {
     if (typeof window !== 'undefined' && (window as any).ethereum) {
       const ethereum = (window as any).ethereum;
@@ -81,7 +76,6 @@ export default function Home() {
     }
   }, [handleConnectWallet]);
 
-  // Live FTSOv2 Sub-Second Block Polling Simulation (runs on client only)
   useEffect(() => {
     if (!isMounted) return;
 
@@ -97,10 +91,9 @@ export default function Home() {
     return () => clearInterval(interval);
   }, [isMounted]);
 
-  // Execute REAL On-Chain Rebalance via MetaMask / Ethers Signer
   const handleExecuteRebalance = async () => {
     if (!account) {
-      alert('Please click "Connect MetaMask Wallet" in the header to connect your real wallet!');
+      alert('Please click "Connect Web3 Wallet" in the header to connect your real wallet!');
       return;
     }
 
@@ -114,10 +107,9 @@ export default function Home() {
       const provider = new ethers.BrowserProvider((window as any).ethereum);
       const signer = await provider.getSigner();
 
-      // Trigger transaction to Vault contract on Coston2
       const tx = await signer.sendTransaction({
         to: DEPLOYED_VAULT_ADDRESS,
-        value: ethers.parseEther('0.01'), // Small 0.01 C2FLR test rebalance call
+        value: ethers.parseEther('0.01'),
       });
 
       const newTx: TransactionLog = {
@@ -133,7 +125,7 @@ export default function Home() {
       };
 
       setTxLogs((prev) => [newTx, ...prev]);
-      await tx.wait(); // Wait for Coston2 block confirmation
+      await tx.wait();
       if (account) updateRealBalance(account);
     } catch (err: any) {
       console.error('Real transaction error:', err);
@@ -145,15 +137,14 @@ export default function Home() {
     }
   };
 
-  // Real On-Chain Deposit Transaction
   const handleDeposit = async (amountStr: string) => {
     if (!account) {
-      alert('Please connect your MetaMask wallet first!');
+      alert('Please connect your Web3 wallet first!');
       return;
     }
 
     if (typeof window === 'undefined' || !(window as any).ethereum) {
-      alert('MetaMask or EVM wallet is required.');
+      alert('EVM wallet is required.');
       return;
     }
 
@@ -195,10 +186,9 @@ export default function Home() {
     }
   };
 
-  // Real On-Chain Withdraw Strategy
   const handleWithdraw = async (amountStr: string) => {
     if (!account) {
-      alert('Please connect your MetaMask wallet first!');
+      alert('Please connect your Web3 wallet first!');
       return;
     }
 
@@ -224,7 +214,7 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#07090e] text-gray-100" suppressHydrationWarning>
+    <div className="min-h-screen flex flex-col bg-white text-[#0f172a]" suppressHydrationWarning>
       <Header
         account={account}
         onConnect={handleConnectWallet}
@@ -264,7 +254,7 @@ export default function Home() {
         </div>
       </main>
 
-      <footer className="w-full border-t border-gray-800 bg-[#07090e] py-6 text-center text-xs text-gray-500 font-mono">
+      <footer className="w-full border-t border-slate-200 bg-slate-50 py-6 text-center text-xs text-slate-500 font-mono">
         <p>FlarePulse AI • Deployed on Flare Coston2 Testnet (Chain ID 114) • Built for Flare Summer Signal Hackathon</p>
       </footer>
     </div>

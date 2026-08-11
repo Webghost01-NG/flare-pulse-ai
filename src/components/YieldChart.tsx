@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { BarChart2, Activity, Zap, TrendingUp, Info } from 'lucide-react';
+import { BarChart2 } from 'lucide-react';
 
 interface ChartPoint {
   time: string;
@@ -36,23 +36,23 @@ export const YieldChart: React.FC = () => {
   return (
     <div className="glass-card p-6 sm:p-8 flex flex-col justify-between relative overflow-hidden">
       {/* Header */}
-      <div className="flex items-center justify-between border-b border-white/10 pb-5 mb-6">
+      <div className="flex items-center justify-between border-b border-slate-200 pb-5 mb-6">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-xl bg-[#ea2a66]/15 border border-[#ea2a66]/30 flex items-center justify-center text-[#ea2a66]">
+          <div className="w-10 h-10 rounded-xl bg-red-50 border border-red-200 flex items-center justify-center text-[#dc2626]">
             <BarChart2 className="w-5 h-5" />
           </div>
           <div>
-            <h3 className="font-black text-lg text-white tracking-tight">FTSOv2 Block Price & AI Signal Analytics</h3>
-            <span className="text-xs text-gray-400 font-mono">Real-Time Oracle Stream vs Strategy Execution</span>
+            <h3 className="font-black text-lg text-[#1e3a8a] tracking-tight">FTSOv2 Block Price & AI Signal Analytics</h3>
+            <span className="text-xs text-slate-500 font-mono">Real-Time Oracle Stream vs Strategy Execution</span>
           </div>
         </div>
 
         <div className="flex items-center gap-4 text-xs font-mono">
-          <span className="flex items-center gap-2 text-gray-300">
-            <span className="w-3 h-3 rounded-full bg-[#ea2a66] shadow-sm shadow-[#ea2a66]" /> FLR/USD Feed
+          <span className="flex items-center gap-2 text-slate-700 font-bold">
+            <span className="w-3 h-3 rounded-full bg-[#dc2626]" /> FLR/USD Feed
           </span>
-          <span className="flex items-center gap-2 text-gray-300">
-            <span className="w-3 h-3 rounded-full bg-emerald-400 shadow-sm shadow-emerald-400" /> AI Execution Node
+          <span className="flex items-center gap-2 text-slate-700 font-bold">
+            <span className="w-3 h-3 rounded-full bg-[#2563eb]" /> AI Execution Node
           </span>
         </div>
       </div>
@@ -61,7 +61,7 @@ export const YieldChart: React.FC = () => {
       <div className="relative w-full h-56 my-3">
         {/* Tooltip Overlay */}
         {hoveredPoint && (
-          <div className="absolute top-2 right-4 bg-gray-950/90 border border-cyan-500/40 px-3 py-1.5 rounded-xl text-xs font-mono text-cyan-300 shadow-xl z-20">
+          <div className="absolute top-2 right-4 bg-white border border-blue-200 px-3 py-1.5 rounded-xl text-xs font-mono text-blue-900 shadow-md z-20">
             <span>Time: {hoveredPoint.time}</span> | <span>Price: ${hoveredPoint.price.toFixed(4)}</span> | <span>APY: {hoveredPoint.apy}%</span>
           </div>
         )}
@@ -69,15 +69,15 @@ export const YieldChart: React.FC = () => {
         <svg viewBox="0 0 600 200" className="w-full h-full overflow-visible">
           <defs>
             <linearGradient id="areaGradient" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#ea2a66" stopOpacity="0.45" />
-              <stop offset="100%" stopColor="#ea2a66" stopOpacity="0.0" />
+              <stop offset="0%" stopColor="#2563eb" stopOpacity="0.2" />
+              <stop offset="100%" stopColor="#2563eb" stopOpacity="0.0" />
             </linearGradient>
           </defs>
 
           {/* Grid lines */}
-          <line x1="0" y1="40" x2="600" y2="40" stroke="#1f2937" strokeDasharray="4 4" />
-          <line x1="0" y1="100" x2="600" y2="100" stroke="#1f2937" strokeDasharray="4 4" />
-          <line x1="0" y1="160" x2="600" y2="160" stroke="#1f2937" strokeDasharray="4 4" />
+          <line x1="0" y1="40" x2="600" y2="40" stroke="#e2e8f0" strokeDasharray="4 4" />
+          <line x1="0" y1="100" x2="600" y2="100" stroke="#e2e8f0" strokeDasharray="4 4" />
+          <line x1="0" y1="160" x2="600" y2="160" stroke="#e2e8f0" strokeDasharray="4 4" />
 
           {/* Gradient Area Fill */}
           <polygon
@@ -88,7 +88,7 @@ export const YieldChart: React.FC = () => {
           {/* Main Price Line */}
           <polyline
             fill="none"
-            stroke="#ea2a66"
+            stroke="#dc2626"
             strokeWidth="3.5"
             strokeLinecap="round"
             strokeLinejoin="round"
@@ -107,10 +107,10 @@ export const YieldChart: React.FC = () => {
                 onMouseEnter={() => setHoveredPoint(pt)}
                 onMouseLeave={() => setHoveredPoint(null)}
               >
-                <circle cx={x} cy={y} r="6" fill="#ffffff" stroke="#ea2a66" strokeWidth="3" />
+                <circle cx={x} cy={y} r="6" fill="#ffffff" stroke="#2563eb" strokeWidth="3" />
                 {pt.signal === 'BUY' && (
                   <g className="animate-bounce">
-                    <circle cx={x} cy={y - 18} r="10" fill="#10b981" />
+                    <circle cx={x} cy={y - 18} r="10" fill="#2563eb" />
                     <text x={x} y={y - 14} textAnchor="middle" fill="#ffffff" fontSize="11" fontWeight="bold">
                       ↑
                     </text>
@@ -123,7 +123,7 @@ export const YieldChart: React.FC = () => {
       </div>
 
       {/* X-Axis Timestamps */}
-      <div className="flex justify-between text-xs font-mono text-gray-400 pt-3 border-t border-white/10">
+      <div className="flex justify-between text-xs font-mono text-slate-500 pt-3 border-t border-slate-200">
         {MOCK_HISTORICAL_DATA.map((pt) => (
           <span key={pt.time}>{pt.time}</span>
         ))}
