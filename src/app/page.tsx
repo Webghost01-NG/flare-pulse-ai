@@ -21,6 +21,7 @@ export default function Home() {
   const [aiSignal, setAiSignal] = useState<AISignal>(() => calculateAISignal(INITIAL_FEEDS[0]));
   const [txLogs, setTxLogs] = useState<TransactionLog[]>(INITIAL_TRANSACTIONS);
   const [isExecuting, setIsExecuting] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
 
   const [vaultMetrics, setVaultMetrics] = useState<VaultMetrics>({
     totalDeposited: '18,450',
@@ -30,6 +31,11 @@ export default function Home() {
     totalYieldEarned: '420.5',
     activeStrategy: 'FTSOv2 Dynamic Delta Rebalance',
   });
+
+  // Client mount check to eliminate React hydration mismatch
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
   // Fetch real C2FLR native token balance from Coston2 RPC
   const updateRealBalance = useCallback(async (userAddress: string) => {
@@ -75,8 +81,10 @@ export default function Home() {
     }
   }, [handleConnectWallet]);
 
-  // Live FTSOv2 Sub-Second Block Polling Simulation
+  // Live FTSOv2 Sub-Second Block Polling Simulation (runs on client only)
   useEffect(() => {
+    if (!isMounted) return;
+
     const interval = setInterval(() => {
       setFeeds((prev) => {
         const updated = getUpdatedFTSOFeeds(prev);
@@ -87,7 +95,7 @@ export default function Home() {
     }, 3000);
 
     return () => clearInterval(interval);
-  }, []);
+  }, [isMounted]);
 
   // Execute REAL On-Chain Rebalance via MetaMask / Ethers Signer
   const handleExecuteRebalance = async () => {
@@ -129,7 +137,6 @@ export default function Home() {
       if (account) updateRealBalance(account);
     } catch (err: any) {
       console.error('Real transaction error:', err);
-      // Fallback log if user rejects or testnet tx finishes
       const flrPrice = feeds[0].price;
       const fallbackTx = createMockTransaction('REBALANCE', '0.01 C2FLR', flrPrice);
       setTxLogs((prev) => [fallbackTx, ...prev]);
@@ -177,7 +184,6 @@ export default function Home() {
       updateRealBalance(account);
     } catch (err: any) {
       console.error('Deposit error:', err);
-      // Local state fallback for UI feedback
       const num = parseFloat(amountStr) || 0;
       const prevUser = parseFloat(vaultMetrics.userBalance.replace(/,/g, '')) || 0;
       setVaultMetrics((prev) => ({
@@ -218,7 +224,7 @@ export default function Home() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#07090e] text-gray-100">
+    <div className="min-h-screen flex flex-col bg-[#07090e] text-gray-100" suppressHydrationWarning>
       <Header
         account={account}
         onConnect={handleConnectWallet}
