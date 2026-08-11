@@ -1,0 +1,32 @@
+{
+  "name": "flare-pulse-ai",
+  "version": "1.0.0",
+  "private": true,
+  "description": "FlarePulse AI: Autonomous Yield & Risk Sentinel powered by Flare Time Series Oracle (FTSOv2) on Coston2 Testnet for Flare Summer Signal Hackathon",
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "compile": "hardhat compile",
+    "deploy:coston2": "hardhat run scripts/deploy.ts --network coston2"
+  },
+  "dependencies": {
+    "ethers": "^6.13.0",
+    "lucide-react": "^0.395.0",
+    "next": "^14.2.4",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1"
+  },
+  "devDependencies": {
+    "@nomicfoundation/hardhat-toolbox": "^5.0.0",
+    "@types/node": "^20.14.9",
+    "@types/react": "^18.3.3",
+    "@types/react-dom": "^18.3.0",
+    "autoprefixer": "^10.4.19",
+    "hardhat": "^2.22.5",
+    "postcss": "^8.4.38",
+    "tailwindcss": "^3.4.4",
+    "typescript": "^5.4.5"
+  }
+}
