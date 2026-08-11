@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { X, ArrowRight, ShieldCheck, Wallet } from 'lucide-react';
+import { X, ArrowRight, ShieldCheck, Wallet, AlertCircle } from 'lucide-react';
 import { COSTON2_CHAIN_ID, COSTON2_NETWORK_PARAMS } from './Header';
 
 interface WalletModalProps {
@@ -17,7 +17,7 @@ interface WalletOption {
   iconBg: string;
   iconText: string;
   badge?: string;
-  checkProvider: () => any;
+  getProvider: () => any;
 }
 
 export const WalletModal: React.FC<WalletModalProps> = ({
@@ -30,6 +30,29 @@ export const WalletModal: React.FC<WalletModalProps> = ({
 
   if (!isOpen) return null;
 
+  // Helper to safely locate specific wallet provider even when multiple extensions override window.ethereum
+  const getSpecificProvider = (type: 'metamask' | 'phantom' | 'coinbase' | 'walletconnect') => {
+    if (typeof window === 'undefined') return null;
+    const win = window as any;
+
+    if (type === 'metamask') {
+      if (win.ethereum?.providers) {
+        return win.ethereum.providers.find((p: any) => p.isMetaMask) || win.ethereum;
+      }
+      return win.ethereum;
+    }
+
+    if (type === 'phantom') {
+      return win.phantom?.ethereum || win.ethereum;
+    }
+
+    if (type === 'coinbase') {
+      return win.coinbaseWalletExtension || (win.ethereum?.isCoinbaseWallet ? win.ethereum : null) || win.ethereum;
+    }
+
+    return win.ethereum;
+  };
+
   const walletOptions: WalletOption[] = [
     {
       id: 'metamask',
@@ -37,8 +60,8 @@ export const WalletModal: React.FC<WalletModalProps> = ({
       subtext: 'Ethereum, Flare Coston2, Base, Arbitrum',
       iconBg: 'bg-orange-50 text-orange-600 border-orange-200',
       iconText: '🦊',
-      badge: 'Popular',
-      checkProvider: () => (typeof window !== 'undefined' ? (window as any).ethereum : null),
+      badge: 'Recommended',
+      getProvider: () => getSpecificProvider('metamask'),
     },
     {
       id: 'phantom',
@@ -46,7 +69,7 @@ export const WalletModal: React.FC<WalletModalProps> = ({
       subtext: 'Multi-Chain EVM & Solana',
       iconBg: 'bg-purple-50 text-purple-600 border-purple-200',
       iconText: '👻',
-      checkProvider: () => (typeof window !== 'undefined' ? ((window as any).phantom?.ethereum || (window as any).ethereum) : null),
+      getProvider: () => getSpecificProvider('phantom'),
     },
     {
       id: 'coinbase',
@@ -54,15 +77,15 @@ export const WalletModal: React.FC<WalletModalProps> = ({
       subtext: 'Coinbase Smart Wallet & Extension',
       iconBg: 'bg-blue-50 text-blue-600 border-blue-200',
       iconText: '🔵',
-      checkProvider: () => (typeof window !== 'undefined' ? ((window as any).coinbaseWalletExtension || (window as any).ethereum) : null),
+      getProvider: () => getSpecificProvider('coinbase'),
     },
     {
       id: 'walletconnect',
       name: 'WalletConnect v2',
       subtext: 'Mobile Apps, Rainbow, Trust Wallet, QR Code',
-      iconBg: 'bg-[#00f2fe]/10 text-cyan-700 border-cyan-200',
+      iconBg: 'bg-cyan-50 text-cyan-600 border-cyan-200',
       iconText: '🌐',
-      checkProvider: () => (typeof window !== 'undefined' ? (window as any).ethereum : null),
+      getProvider: () => getSpecificProvider('walletconnect'),
     },
   ];
 
@@ -71,29 +94,39 @@ export const WalletModal: React.FC<WalletModalProps> = ({
     setConnectingId(option.id);
 
     try {
-      const provider = option.checkProvider();
+      const provider = option.getProvider();
       if (!provider) {
         throw new Error(`${option.name} extension not detected. Please install the extension.`);
       }
 
+      // 1. Request accounts safely
       const accounts = await provider.request({ method: 'eth_requestAccounts' });
       if (!accounts || accounts.length === 0) {
-        throw new Error('No accounts authorized');
+        throw new Error('No accounts authorized in wallet.');
       }
 
       const userAddress = accounts[0];
 
+      // 2. Attempt network switch to Coston2 Testnet safely
+      // Wrap in try-catch so non-Coston2 wallets (like Phantom) don't throw blocking unsupported network errors
       try {
         await provider.request({
           method: 'wallet_switchEthereumChain',
           params: [{ chainId: COSTON2_CHAIN_ID }],
         });
       } catch (switchError: any) {
-        if (switchError.code === 4902) {
-          await provider.request({
-            method: 'wallet_addEthereumChain',
-            params: [COSTON2_NETWORK_PARAMS],
-          });
+        // If chain is not added yet (code 4902), attempt to add it
+        if (switchError?.code === 4902) {
+          try {
+            await provider.request({
+              method: 'wallet_addEthereumChain',
+              params: [COSTON2_NETWORK_PARAMS],
+            });
+          } catch (addError) {
+            console.warn('Custom chain addition not supported by this wallet provider:', addError);
+          }
+        } else {
+          console.warn('Network switch skipped by wallet provider:', switchError);
         }
       }
 
@@ -140,8 +173,9 @@ export const WalletModal: React.FC<WalletModalProps> = ({
 
         {/* Error notification if any */}
         {errorMsg && (
-          <div className="mb-4 p-3 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs font-mono">
-            {errorMsg}
+          <div className="mb-4 p-3 rounded-xl bg-red-50 border border-red-200 text-red-700 text-xs font-mono flex items-start gap-2">
+            <AlertCircle className="w-4 h-4 text-red-600 shrink-0 mt-0.5" />
+            <span>{errorMsg}</span>
           </div>
         )}
 
