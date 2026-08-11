@@ -1,21 +1,104 @@
 'use client';
 
-import React, { useState } from 'react';
-import { Activity, ShieldCheck, Wallet, Zap, ChevronDown, Radio, Globe, Layers } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Activity, ShieldCheck, Wallet, Zap, Radio, Globe, AlertTriangle } from 'lucide-react';
 
-export const Header: React.FC = () => {
-  const [isConnected, setIsConnected] = useState(false);
-  const [walletAddress, setWalletAddress] = useState<string | null>(null);
+export const COSTON2_CHAIN_ID = '0x72'; // 114 in hex
 
-  const handleConnectWallet = () => {
-    if (isConnected) {
-      setIsConnected(false);
-      setWalletAddress(null);
-    } else {
-      setIsConnected(true);
-      setWalletAddress('0x3a4b...7d6a');
+export const COSTON2_NETWORK_PARAMS = {
+  chainId: COSTON2_CHAIN_ID,
+  chainName: 'Flare Coston2 Testnet',
+  nativeCurrency: {
+    name: 'Coston2 Flare',
+    symbol: 'C2FLR',
+    decimals: 18,
+  },
+  rpcUrls: ['https://coston2-api.flare.network/ext/C/rpc'],
+  blockExplorerUrls: ['https://coston2-explorer.flare.network'],
+};
+
+interface HeaderProps {
+  account: string | null;
+  onConnect: (address: string) => void;
+  onDisconnect: () => void;
+}
+
+export const Header: React.FC<HeaderProps> = ({ account, onConnect, onDisconnect }) => {
+  const [isConnecting, setIsConnecting] = useState(false);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
+
+  const connectRealWallet = async () => {
+    setErrorMsg(null);
+    if (typeof window === 'undefined' || !(window as any).ethereum) {
+      setErrorMsg('No Web3 wallet found! Please install MetaMask or a compatible EVM wallet.');
+      alert('No Web3 wallet found! Please install MetaMask extension.');
+      return;
+    }
+
+    try {
+      setIsConnecting(true);
+      const ethereum = (window as any).ethereum;
+
+      // 1. Request real accounts from MetaMask
+      const accounts = await ethereum.request({ method: 'eth_requestAccounts' });
+      if (!accounts || accounts.length === 0) {
+        throw new Error('No accounts selected');
+      }
+      const userAddress = accounts[0];
+
+      // 2. Prompt user to switch or add Coston2 Testnet (Chain ID 114)
+      try {
+        await ethereum.request({
+          method: 'wallet_switchEthereumChain',
+          params: [{ chainId: COSTON2_CHAIN_ID }],
+        });
+      } catch (switchError: any) {
+        // Code 4902 indicates chain is not added yet
+        if (switchError.code === 4902) {
+          await ethereum.request({
+            method: 'wallet_addEthereumChain',
+            params: [COSTON2_NETWORK_PARAMS],
+          });
+        }
+      }
+
+      onConnect(userAddress);
+    } catch (err: any) {
+      console.error('MetaMask connect failed:', err);
+      setErrorMsg(err.message || 'Wallet connection failed');
+    } finally {
+      setIsConnecting(false);
     }
   };
+
+  // Listen for real-time account and chain changes in MetaMask
+  useEffect(() => {
+    if (typeof window !== 'undefined' && (window as any).ethereum) {
+      const ethereum = (window as any).ethereum;
+
+      const handleAccountsChanged = (accounts: string[]) => {
+        if (accounts.length > 0) {
+          onConnect(accounts[0]);
+        } else {
+          onDisconnect();
+        }
+      };
+
+      const handleChainChanged = () => {
+        window.location.reload();
+      };
+
+      ethereum.on('accountsChanged', handleAccountsChanged);
+      ethereum.on('chainChanged', handleChainChanged);
+
+      return () => {
+        if (ethereum.removeListener) {
+          ethereum.removeListener('accountsChanged', handleAccountsChanged);
+          ethereum.removeListener('chainChanged', handleChainChanged);
+        }
+      };
+    }
+  }, [onConnect, onDisconnect]);
 
   return (
     <header className="w-full border-b border-white/10 bg-[#04060c]/80 backdrop-blur-xl sticky top-0 z-50 px-4 sm:px-8 py-3.5 flex items-center justify-between">
@@ -67,17 +150,24 @@ export const Header: React.FC = () => {
 
       {/* Action Buttons */}
       <div className="flex items-center gap-3">
-        <button
-          onClick={handleConnectWallet}
-          className={`flex items-center gap-2.5 px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition-all shadow-lg font-mono ${
-            isConnected
-              ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 hover:bg-emerald-500/30'
-              : 'btn-neon text-white hover:opacity-95'
-          }`}
-        >
-          <Wallet className="w-4 h-4" />
-          <span>{isConnected ? walletAddress : 'Connect Web3 Wallet'}</span>
-        </button>
+        {account ? (
+          <button
+            onClick={onDisconnect}
+            className="flex items-center gap-2.5 px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold font-mono bg-emerald-500/20 text-emerald-300 border border-emerald-500/40 hover:bg-emerald-500/30 transition-all shadow-lg"
+          >
+            <Wallet className="w-4 h-4 text-emerald-400" />
+            <span>{account.substring(0, 6)}...{account.substring(account.length - 4)}</span>
+          </button>
+        ) : (
+          <button
+            onClick={connectRealWallet}
+            disabled={isConnecting}
+            className="flex items-center gap-2.5 px-5 py-2.5 rounded-xl text-xs sm:text-sm font-bold font-mono btn-neon text-white hover:opacity-95 transition-all shadow-lg disabled:opacity-50"
+          >
+            <Wallet className="w-4 h-4" />
+            <span>{isConnecting ? 'Connecting MetaMask...' : 'Connect MetaMask Wallet'}</span>
+          </button>
+        )}
       </div>
     </header>
   );
