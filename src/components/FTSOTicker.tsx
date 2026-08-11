@@ -2,7 +2,7 @@
 
 import React from 'react';
 import { FTSOFeed } from '../types';
-import { TrendingUp, TrendingDown, Cpu, Activity, Zap } from 'lucide-react';
+import { TrendingUp, TrendingDown, Cpu } from 'lucide-react';
 
 interface FTSOTickerProps {
   feeds: FTSOFeed[];
@@ -26,18 +26,12 @@ export const FTSOTicker: React.FC<FTSOTickerProps> = ({ feeds }) => {
           <div
             key={feed.symbol}
             className="glass-card p-5 flex flex-col justify-between relative overflow-hidden group hover:border-[#ea2a66]/40"
+            style={{ borderRadius: '16px', background: 'rgba(10, 15, 26, 0.8)', border: '1px solid rgba(255,255,255,0.1)' }}
           >
-            {/* Background Ambient Glow */}
-            <div
-              className={`absolute -bottom-10 -right-10 w-32 h-32 rounded-full blur-2xl opacity-20 pointer-events-none ${
-                isPositive ? 'bg-emerald-500' : 'bg-rose-500'
-              }`}
-            />
-
             {/* Top Row: Symbol, Name & Sub-Second Latency */}
             <div className="flex items-center justify-between z-10">
               <div className="flex items-center gap-3">
-                <div className="w-10 h-10 rounded-xl bg-gray-900 border border-white/10 flex items-center justify-center font-black text-sm text-white shadow-inner font-mono">
+                <div className="w-10 h-10 rounded-xl bg-gray-900 border border-white/10 flex items-center justify-center font-black text-sm text-white font-mono">
                   {feed.symbol}
                 </div>
                 <div>
@@ -49,8 +43,8 @@ export const FTSOTicker: React.FC<FTSOTickerProps> = ({ feeds }) => {
                 </div>
               </div>
 
-              <div className="flex items-center gap-1 text-[11px] font-mono text-cyan-400 bg-cyan-950/50 px-2.5 py-1 rounded-lg border border-cyan-800/40 shadow-inner">
-                <Cpu className="w-3 h-3 animate-pulse text-cyan-300" />
+              <div className="flex items-center gap-1 text-[11px] font-mono text-cyan-400 bg-cyan-950/50 px-2.5 py-1 rounded-lg border border-cyan-800/40">
+                <Cpu className="w-3 h-3 text-cyan-300" />
                 <span>{feed.blockLatencyMs}ms</span>
               </div>
             </div>
@@ -64,14 +58,14 @@ export const FTSOTicker: React.FC<FTSOTickerProps> = ({ feeds }) => {
                 </div>
               </div>
 
-              {/* Mini Sparkline Graph */}
-              <div className="w-24 h-8 relative">
-                <svg viewBox="0 0 200 30" className="w-full h-full overflow-visible">
+              {/* Mini Sparkline Graph with Strict Width Constraints */}
+              <div className="w-24 h-8 relative" style={{ width: '96px', height: '32px', maxWidth: '96px' }}>
+                <svg viewBox="0 0 200 30" style={{ width: '100%', height: '100%' }}>
                   <path
                     d={sparkPath}
                     fill="none"
                     stroke={isPositive ? '#10b981' : '#f43f5e'}
-                    strokeWidth="2.5"
+                    strokeWidth="3"
                     strokeLinecap="round"
                   />
                 </svg>
